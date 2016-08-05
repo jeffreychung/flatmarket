@@ -48,9 +48,10 @@ Flatmarket is a static website generator paired with a proxy server for sending 
 
 - [Installation](#installation)
 - [Creating the Schema](#creating-the-schema)
-- [Running Locally](#running-locally)
-- [Deploying the Static Website](#deploying-the-static-website)
+- [Developing Locally](#developing-locally)
+- [Building & deploying the Static Website](#building-deploying-the-static-website)
 - [Deploying the Proxy Server](#deploying-the-proxy-server)
+- [Using Themes](#using-themes)
 
 ### Installation
 
@@ -64,60 +65,79 @@ npm install flatmarket-cli
 
 The schema is a JSON document that conforms to the [flatmarket-schema spec](packages/flatmarket-schema). It contains information about individual products (e.g. description, price, images), Stripe configuration (e.g. currency, addresses) and any other data necessary to render the static website. It looks [like this](packages/flatmarket-example/src/flatmarket.json). By convention, this document should be located at `src/flatmarket.json`.
 
-### Running Locally
+### Developing Locally
 
 The Flatmarket CLI comes with a local development server so you can preview your website and create charges with your Stripe test keys. The following command will build your webiste and start a development server at [https://127.0.0.1:8000/](https://127.0.0.1:8000/) (note the ***https***).
 
 ```sh
-./node_modules/.bin/flatmarket ./src/flatmarket.json --stripe-secret-key YOUR_TEST_SECRET_KEY --dev
+./node_modules/.bin/flatmarket ./src/flatmarket.json \
+    --stripe-secret-key YOUR_TEST_SECRET_KEY \
+    --dev
 ```
 
 An [example project](packages/flatmarket-example) is included to help you get started.
 
-### Deploying the Static Website
+### Building & deploying the Static Website
 
 When you're finished with development, generate the static website and upload the files to your preferred web server.
 
 ```sh
-./node_modules/.bin/flatmarket ./src/flatmarket.json \
-    --component ./node_modules/flatmarket-theme-bananas/index.jsx
+./node_modules/.bin/flatmarket ./src/flatmarket.json
 ```
 
 ### Deploying the Proxy Server
 
-#### Automatic
+#### Automated
 
-Platform | Click to deploy
----|---
-AWS | [![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](#)
-Heroku | [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/christophercliff/flatmarket-server-heroku)
+Platform | Click to deploy | &nbsp;
+---|---|---
+AWS | [![Deploy to AWS](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](#) | (coming soon)
+Heroku | [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/christophercliff/flatmarket-server-heroku) | &nbsp;
 
 #### Manual
 
-- [node.js](packages/flatmarket-server)
+- [service](packages/flatmarket-service)
+- [server](packages/flatmarket-server)
 - [hapi](packages/flatmarket-hapi)
 
-## Themes
+### Using Themes
+
+A theme is a [container component](http://redux.js.org/docs/basics/UsageWithReact.html#presentational-and-container-components) that gets bound to the Redux store implemented by [flatmarket-ui](packages/flatmarket-ui).
+
+Themes are defined by a single React component but can contain multiple child components, CSS, fonts and images. Flatmarket uses [Webpack loaders](https://webpack.github.io/docs/using-loaders.html) to import non-JavaScript file types. Supported loaders:
+
+- [json-loader](https://www.npmjs.com/package/json-loader)
+- [jsx-loader](https://www.npmjs.com/package/jsx-loader)
+- [less-loader](https://www.npmjs.com/package/less-loader)
+- [url-loader](https://www.npmjs.com/package/url-loader)
+
+To use a custom theme, run:
+
+```sh
+./node_modules/.bin/flatmarket ./src/flatmarket.json \
+    --component ./path/to/your-theme.jsx
+```
+
+#### Included Themes
 
 - [Bananas](packages/flatmarket-theme-bananas)
 
 ## Developers
 
-Get the code:
+To get the code, clone this repo and install the dependencies:
 
 ```sh
-git clone git@github.com:christophercliff/flatmarket.git && cd ./flatmarket/
 npm install
 make reset
 ```
 
-Run tests:
+Run the tests:
 
 ```
 make test
 ```
 
-Run the example package on a local dev server:
+Run the example locally:
 
 ```
 make example-dev
